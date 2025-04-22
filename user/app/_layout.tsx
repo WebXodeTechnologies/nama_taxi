@@ -1,10 +1,13 @@
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
-import "react-native-reanimated";
-import { Stack } from "expo-router";
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+// import 'react-native-reanimated';
 import { ToastProvider } from "react-native-toast-notifications";
 import { LogBox } from "react-native";
-import { useFonts } from "expo-font";
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -12,33 +15,37 @@ export {
 } from "expo-router";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-// SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    "TT-Octosquares-Medium": require("../assets/fonts/TT-Octosquares-Medium.ttf"),
+  const colorScheme = useColorScheme();
+  
+  const [fontsLoaded, fontError] = useFonts({
+    PoppinsRegular: require('../assets/fonts/Poppins-Regular.ttf'),
+    PoppinsItalic: require('../assets/fonts/Poppins-Italic.ttf'),
+    OutfitRegular: require('../assets/fonts/Outfit-Regular.ttf'),
+    OutfitMedium: require('../assets/fonts/Outfit-Medium.ttf'),
   });
 
   useEffect(() => {
     LogBox.ignoreAllLogs(true);
-    if (loaded || error) {
+    if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, error]);
+  }, [fontsLoaded, fontError]);
 
-  if (!loaded && !error) {
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
   return (
-    <ToastProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-      </Stack>
-    </ToastProvider>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ToastProvider>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+        </Stack>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }

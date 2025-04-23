@@ -1,13 +1,9 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-// import 'react-native-reanimated';
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useState } from "react";
+import { Stack } from "expo-router";
 import { ToastProvider } from "react-native-toast-notifications";
 import { LogBox } from "react-native";
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useFonts } from "expo-font";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -15,12 +11,10 @@ export {
 } from "expo-router";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();r
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  
-  const [fontsLoaded, fontError] = useFonts({
+  const [loaded, error] = useFonts({
     PoppinsRegular: require('../assets/fonts/Poppins-Regular.ttf'),
     PoppinsItalic: require('../assets/fonts/Poppins-Italic.ttf'),
     OutfitRegular: require('../assets/fonts/Outfit-Regular.ttf'),
@@ -29,23 +23,24 @@ export default function RootLayout() {
 
   useEffect(() => {
     LogBox.ignoreAllLogs(true);
-    if (fontsLoaded || fontError) {
+    if (loaded || error) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [loaded, error]);
 
-  if (!fontsLoaded && !fontError) {
+  if (!loaded && !error) {
     return null;
   }
 
+  return <RootLayoutNav />;
+}
+
+function RootLayoutNav() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <ToastProvider>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-        </Stack>
-      </ToastProvider>
-    </ThemeProvider>
+    <ToastProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+      </Stack>
+    </ToastProvider>
   );
 }

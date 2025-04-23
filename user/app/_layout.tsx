@@ -4,13 +4,10 @@ import { Stack } from "expo-router";
 import { ToastProvider } from "react-native-toast-notifications";
 import { LogBox } from "react-native";
 import { useFonts } from "expo-font";
-
+  
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from "expo-router";
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -20,7 +17,6 @@ export default function RootLayout() {
     OutfitRegular: require("../assets/fonts/Outfit-Regular.ttf"),
     OutfitMedium: require("../assets/fonts/Outfit-Medium.ttf"),
   });
-
   useEffect(() => {
     LogBox.ignoreAllLogs(true);
     if (loaded || error) {
@@ -34,7 +30,6 @@ export default function RootLayout() {
 
   return <RootLayoutNav />;
 }
-
 function RootLayoutNav() {
   return (
     <ToastProvider>

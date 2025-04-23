@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {windowHeight} from '../themes/app.constant';
+import {windowHeight} from '../Themes/app.constant';
 
 const external = StyleSheet.create({
   Pb_10: {

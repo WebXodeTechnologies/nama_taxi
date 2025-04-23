@@ -1,10 +1,10 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { Redirect } from "expo-router";
+import { useState } from "react";
 
-export default function index() {
+export default function Index() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Nama Call Taxi</Text>
-    </View>
+    <Redirect href={!isLoggedIn ? "/(routes)/onboarding" : "/(tabs)/home"} />
   );
 }

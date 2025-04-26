@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import React from "react";
 import { commonStyles } from "@/styles/common.style";
-import color from "@/themes/app.colors";
-import { windowHeight } from "@/themes/app.constant";
+import color from "@/Themes/app.colors";
+import { windowHeight } from "@/Themes/app.constant";
 import { external } from "@/styles/external.style";
 
 const Button: React.FC<ButtonProps> = ({

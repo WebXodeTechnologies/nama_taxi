@@ -44,7 +44,7 @@ export type Color = {
     whiteColor: '#fff',
     blackColor: '#000',
     primaryGray: '#E9E9E9',
-    buttonBg: '#199675',
+    buttonBg: '#000',
     iconBg: '#32A284',
     modelBg: 'rgba(0, 0, 0, 0.5)',
     darkHeader: '#272727',

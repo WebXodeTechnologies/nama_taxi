@@ -26,9 +26,15 @@ export default function SelectInput({
   showWarning,
 }: InputProps) {
   const { colors } = useTheme();
+
+  const pickerItems = items.map((item) => ({
+    ...item,
+    key: item.value,
+  }));
+
   return (
     <View>
-      {/* <Text style={[styles.title, { color: colors.text }]}>{title}</Text> */}
+      <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
       <RNPickerSelect
         onValueChange={onValueChange}
         items={items}

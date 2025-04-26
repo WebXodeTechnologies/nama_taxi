@@ -33,7 +33,7 @@ import {
               paddingTop: windowHeight(50),
             }}
           >
-            Ride Wave
+            Nama Call Taxi
           </Text>
         )}
         <Image

@@ -4,11 +4,11 @@
     "slug": "NamaCallTaxi",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/assets-jsm/icons/person.png",
+    "icon": "./assets/images/logo/cal.png",
     "scheme": "NamaCallTaxi",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/logo/logo1.png",
+      "image": "./assets/images/logo/cal.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,8 +17,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/homeScreenImage/sportsCar.png",
-        "backgroundColor": "0000"
+        "foregroundImage": "./assets/images/logo/cal.png",
+        "backgroundColor": "#ffffff"
       },
       "package": "com.namacalltaxi.app",
       "config": {
@@ -28,7 +28,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/images/logo/logo.png"
+      "favicon": "./assets/images/logo/cal.png"
     },
     "plugins": [
       "expo-router",

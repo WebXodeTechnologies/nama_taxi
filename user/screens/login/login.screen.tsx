@@ -9,11 +9,27 @@ import { external } from "@/styles/external.style";
 import PhoneNumberInput from "@/components/login/phone-number.input";
 import Button from "@/components/common/button";
 import { router } from "expo-router";
-// import { useToast } from "react-native-toast-notifications";
+import { Toast, useToast } from "react-native-toast-notifications";
+import axios from "axios";
 
 export default function LoginScreen() {
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phone_number, setphone_number] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
+
+
+  const handleSubmit = async() => {
+    if (phone_number === "" || countryCode === ""){
+      Toast.show("please fill the Fields!", {placement:"bottom"});
+    } else {
+      const phoneNumber = `+${countryCode}${phone_number}`
+      console.log(process.env.EXPO_PUBLIC_SERVER_URI);
+      await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/registration`, {phone_number : phoneNumber}).then((res)=> {
+        console.log(res);
+      }).catch((error)=>{
+        console.log(error);
+      });
+    };
+  }
 
   return (
     <AuthContainer
@@ -27,15 +43,15 @@ export default function LoginScreen() {
               <SignInText />
               <View style={[external.mt_25, external.Pb_10]}>
                 <PhoneNumberInput
-                  phone_number={phoneNumber}
-                  setphone_number={setPhoneNumber}
+                  phone_number={phone_number}
+                  setphone_number={setphone_number}
                   countryCode={countryCode}
                   setCountryCode={setCountryCode}
                 />
                 <View style={[external.mt_25, external.Pb_15]}>
                   <Button
                     title="Get OTP"
-                    onPress={() => router.push("/(routes)/otp-verification")}
+                    onPress={()=> handleSubmit()}
                   />
                 </View>
               </View>

@@ -15,18 +15,19 @@ import axios from "axios";
 export default function LoginScreen() {
   const [phone_number, setphone_number] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
-
+  const toast = useToast();
+  
 
   const handleSubmit = async() => {
     if (phone_number === "" || countryCode === ""){
-      Toast.show("please fill the Fields!", {placement:"bottom"});
+      toast.show("please fill the Fields!", {placement:"bottom"});
     } else {
-      const phoneNumber = `+${countryCode}${phone_number}`
-      console.log(process.env.EXPO_PUBLIC_SERVER_URI);
+      const phoneNumber = `${countryCode}${phone_number}`
       await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/registration`, {phone_number : phoneNumber}).then((res)=> {
-        console.log(res);
+        router.push({pathname:"/(routes)/otp-verification" , params: {phoneNumber}})
       }).catch((error)=>{
         console.log(error);
+        toast.show("something went wrong, please recheck the details", {type:"danger",placement:"bottom"});
       });
     };
   }

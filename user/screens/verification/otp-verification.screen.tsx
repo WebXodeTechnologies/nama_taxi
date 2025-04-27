@@ -15,6 +15,27 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function OtpVerificationScreen() {
+
+  const [otp,setOtp] = useState('');
+  const toast = useToast(); 
+  const {phoneNumber} = useLocalSearchParams();
+
+
+ const handleSubmit = async() => {
+    if (otp === '') {
+      toast.show("please fill the Fields!", {placement:"bottom"});
+    } else {
+      const otpNumbers = `${otp}`;
+      console.log(otp,phoneNumber);
+      await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/verify-otp`, {phone_number:phoneNumber,otp:otpNumbers}).then((res)=> {
+        // router.push({pathname:"/(routes)/otp-verification" , params: {phoneNumber}})
+        toast.show("Account Verified!");
+      }).catch((error)=>{
+        console.log(error);
+        toast.show("something went wrong, please recheck the details", {type:"danger",placement:"bottom"});
+      });
+    };
+  }
  
 
   return (
@@ -28,8 +49,8 @@ export default function OtpVerificationScreen() {
             subtitle={"Check your phone number for the otp!"}
           />
           <OTPTextInput
-            handleTextChange={(code) => console.log(code)}
-            inputCount={4}
+            handleTextChange={(code) => setOtp(code)}
+            inputCount={6}
             textInputStyle={style.otpTextInput}
             tintColor={color.subtitle}
             autoFocus={false}
@@ -37,7 +58,7 @@ export default function OtpVerificationScreen() {
           <View style={[external.mt_30]}>
             <Button
               title="Verify"
-              onPress={() => router.push("/(tabs)/home")}
+              onPress={() => handleSubmit()}
               
             />
           </View>

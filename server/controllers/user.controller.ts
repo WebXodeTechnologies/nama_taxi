@@ -21,13 +21,13 @@ export const registerUser = async (
   try {
     const { phone_number } = req.body;
     try {
-      await client.verify._v2
-        ?.services(process.env.TWILIO_ACCOUNT_SID!)
+      await client.verify.v2
+        ?.services(process.env.SERVICE_SID!)
         .verifications.create({
           channel: "sms",
           to: phone_number,
         });
-        console.log(req.body);
+        
       return res.status(201).json({ success: true });
     } catch (error) {
       console.log(error);
@@ -35,6 +35,28 @@ export const registerUser = async (
     }
   } catch (error) {
     console.log(error);
-    return res.status(400).json({ success: false });
+    return res.status(400).json({ success: false, message:"something went wrong"});
   }
+};
+
+
+export const verifyOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  
+ try {
+  const {phone_number,otp} = req.body;
+  try {
+    await client.verify.v2?.services(process.env.SERVICE_SID!).verificationChecks.create({ to: phone_number, code: otp })
+    return res.status(200).json({success:true, message:"otp verified Successfully"})
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({success:false,message:"something went wrong"});
+  }
+ } catch (error) {
+  console.log(error);
+  return res.status(400).json({success:false, message:"something went wrong"})
+ }
 };

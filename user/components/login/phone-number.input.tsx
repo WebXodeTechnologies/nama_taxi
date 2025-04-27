@@ -20,6 +20,8 @@ export default function PhoneNumberInput({
   width,
   phone_number,
   setphone_number,
+  countryCode,
+  setCountryCode
 }: Props) {
   return (
     <View>

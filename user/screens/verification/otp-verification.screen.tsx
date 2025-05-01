@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function OtpVerificationScreen() {
 
   const [otp,setOtp] = useState('');
+  const [loader,setLoader] = useState(false);
   const toast = useToast(); 
   const {phoneNumber} = useLocalSearchParams();
 
@@ -25,12 +26,19 @@ export default function OtpVerificationScreen() {
     if (otp === '') {
       toast.show("please fill the Fields!", {placement:"bottom"});
     } else {
+      setLoader(true);
       const otpNumbers = `${otp}`;
       console.log(otp,phoneNumber);
       await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/verify-otp`, {phone_number:phoneNumber,otp:otpNumbers}).then((res)=> {
-        // router.push({pathname:"/(routes)/otp-verification" , params: {phoneNumber}})
-        toast.show("Account Verified!");
+        setLoader(false);
+        if(res.data.user === null) {
+          router.push({pathname:"/(routes)/registration" , params: {user:res.data.user}})
+          toast.show("Account Verified!");
+        } else {
+          router.push("/(tabs)/home");
+        }
       }).catch((error)=>{
+        setLoader(false);
         console.log(error);
         toast.show("something went wrong, please recheck the details", {type:"danger",placement:"bottom"});
       });
@@ -46,11 +54,11 @@ export default function OtpVerificationScreen() {
         <View>
           <SignInText
             title={"OTP Verification"}
-            subtitle={"Check your phone number for the otp!"}
+            subtitle={"Check your phone for the otp!"}
           />
           <OTPTextInput
             handleTextChange={(code) => setOtp(code)}
-            inputCount={6}
+            inputCount={4}
             textInputStyle={style.otpTextInput}
             tintColor={color.subtitle}
             autoFocus={false}
@@ -59,6 +67,7 @@ export default function OtpVerificationScreen() {
             <Button
               title="Verify"
               onPress={() => handleSubmit()}
+              disabled={loader}
               
             />
           </View>

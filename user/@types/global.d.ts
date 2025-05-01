@@ -4,4 +4,5 @@ type ButtonProps = {
   width?: DimensionValue;
   backgroundColor?: string;
   textColor?: string;
+  disabled?: boolean,
 };

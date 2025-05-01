@@ -9,11 +9,12 @@ import { external } from "@/styles/external.style";
 import PhoneNumberInput from "@/components/login/phone-number.input";
 import Button from "@/components/common/button";
 import { router } from "expo-router";
-import { Toast, useToast } from "react-native-toast-notifications";
+import { useToast } from "react-native-toast-notifications";
 import axios from "axios";
 
 export default function LoginScreen() {
   const [phone_number, setphone_number] = useState("");
+  const [loading, setloading] = useState(false);
   const [countryCode, setCountryCode] = useState("+91");
   const toast = useToast();
   
@@ -22,11 +23,14 @@ export default function LoginScreen() {
     if (phone_number === "" || countryCode === ""){
       toast.show("please fill the Fields!", {placement:"bottom"});
     } else {
+      setloading(true);
       const phoneNumber = `${countryCode}${phone_number}`
       await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/registration`, {phone_number : phoneNumber}).then((res)=> {
+        setloading(false);
         router.push({pathname:"/(routes)/otp-verification" , params: {phoneNumber}})
       }).catch((error)=>{
         console.log(error);
+        setloading(false);
         toast.show("something went wrong, please recheck the details", {type:"danger",placement:"bottom"});
       });
     };
@@ -53,6 +57,7 @@ export default function LoginScreen() {
                   <Button
                     title="Get OTP"
                     onPress={()=> handleSubmit()}
+                    disabled={loading}
                   />
                 </View>
               </View>

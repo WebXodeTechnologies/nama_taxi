@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -22,7 +21,7 @@ model user {
   notificationToken String?
   ratings           Float    @default(0)
   totalRides        Float    @default(0)
-  createdAt         DateTime @default(now())
+  cratedAt          DateTime @default(now())
   updatedAt         DateTime @updatedAt
   rides             rides[]  @relation("UserRides")
 }
@@ -69,6 +68,6 @@ model rides {
   rating                  Float?
   user                    user     @relation("UserRides", fields: [userId], references: [id])
   driver                  driver   @relation("DriverRides", fields: [driverId], references: [id])
-  createdAt               DateTime @default(now())
+  cratedAt                DateTime @default(now())
   updatedAt               DateTime @updatedAt
 }

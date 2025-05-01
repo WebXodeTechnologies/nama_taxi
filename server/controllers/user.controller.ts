@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
 import twilio from "twilio";
+import prisma from "../utils/prisma";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ export const registerUser = async (
 
 // verify OTP Function
 
+
 export const verifyOtp = async (
   req: Request,
   res: Response,
@@ -49,23 +51,45 @@ export const verifyOtp = async (
 ) => {
   try {
     const { phone_number, otp } = req.body;
+
     try {
       await client.verify.v2
-        ?.services(process.env.SERVICE_SID!)
-        .verificationChecks.create({ to: phone_number, code: otp });
-      return res
-        .status(200)
-        .json({ success: true, message: "otp verified Successfully" });
+        .services(process.env.TWILIO_SERVICE_SID!)
+        .verificationChecks.create({
+          to: phone_number,
+          code: otp,
+        });
+      // is user exist
+      const isUserExist = await prisma.user.findUnique({
+        where: {
+          phone_number,
+        },
+      });
+      if (isUserExist) {
+      } else {
+        // create account
+        const user = await prisma.user.create({
+          data: {
+            phone_number: phone_number,
+          },
+        });
+        res.status(200).json({
+          success: true,
+          message: "OTP verified successfully!",
+          user: user,
+        });
+      }
     } catch (error) {
       console.log(error);
-      return res
-        .status(400)
-        .json({ success: false, message: "something went wrong" });
+      res.status(400).json({
+        success: false,
+        message: "Something went wrong!",
+      });
     }
   } catch (error) {
     console.log(error);
-    return res
-      .status(400)
-      .json({ success: false, message: "something went wrong" });
+    res.status(400).json({
+      success: false,
+    });
   }
 };

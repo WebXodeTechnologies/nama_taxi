@@ -12,7 +12,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { commonStyles } from "@/styles/common.style";
 import { useToast } from "react-native-toast-notifications";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function OtpVerificationScreen() {
 
@@ -31,9 +30,9 @@ export default function OtpVerificationScreen() {
       console.log(otp,phoneNumber);
       await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/verify-otp`, {phone_number:phoneNumber,otp:otpNumbers}).then((res)=> {
         setLoader(false);
-        if(res.data.user === null) {
+        toast.show("Account Verified!");
+        if(res.data.user.email === null) {
           router.push({pathname:"/(routes)/registration" , params: {user:res.data.user}})
-          toast.show("Account Verified!");
         } else {
           router.push("/(tabs)/home");
         }

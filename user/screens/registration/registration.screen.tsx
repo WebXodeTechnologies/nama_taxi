@@ -11,13 +11,11 @@ import color from "@/Themes/app.colors";
 
 export default function RegistrationScreen() {
   const [emailFormatWarning, setEmailFormatWarning] = useState("");
-  const [showWarning, setShowwarning] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
     email: "",
-    countryCode: "",
-    referalId: "",
   });
   const { colors } = useTheme();
 

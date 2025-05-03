@@ -1,0 +1,38 @@
+{
+  "cli": {
+    "version": ">= 3.19.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "distribution": "store",
+      "android": {
+        "buildType": "aab"
+      },
+      "ios": {
+        "simulator": false
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./your-google-play-service-account.json"
+      },
+      "ios": {
+        "appleId": "your-apple-id@email.com"
+      }
+    }
+  }
+}

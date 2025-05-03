@@ -22,13 +22,13 @@ export const registerUser = async (
     const { phone_number } = req.body;
     try {
       await client.verify.v2
-        ?.services(process.env.SERVICE_SID!)
+        ?.services(process.env.TWILIO_SERVICE_SID!)
         .verifications.create({
           channel: "sms",
           to: phone_number,
         });
 
-      return res.status(201).json({ success: true });
+      return res.status(200).json({ success: true });
     } catch (error) {
       console.log(error);
       return res.status(400).json({ success: false });
@@ -66,17 +66,17 @@ export const verifyOtp = async (
         },
       });
       if (isUserExist) {
+        res.status(200).json({
+          success: true,
+          message: "OTP verified successfully!",
+          user: isUserExist,
+        });
       } else {
         // create account
         const user = await prisma.user.create({
           data: {
             phone_number: phone_number,
           },
-        });
-        res.status(200).json({
-          success: true,
-          message: "OTP verified successfully!",
-          user: user,
         });
       }
     } catch (error) {

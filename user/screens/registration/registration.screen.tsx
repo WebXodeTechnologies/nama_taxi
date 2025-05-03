@@ -8,10 +8,15 @@ import Images from "@/utils/images";
 import Input from "@/components/common/input";
 import Button from "@/components/common/button";
 import color from "@/Themes/app.colors";
+import axios from "axios";
+import { router, useLocalSearchParams } from "expo-router";
+import { Toast } from "react-native-toast-notifications";
 
 export default function RegistrationScreen() {
   const [emailFormatWarning, setEmailFormatWarning] = useState("");
   const [showWarning, setShowWarning] = useState(false);
+  const {user} = useLocalSearchParams() as any;
+  const parsedUser = JSON.parse(user);
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
@@ -26,7 +31,21 @@ export default function RegistrationScreen() {
     }));
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = async() => {
+    if (!formData.name || !formData.email) {
+      setShowWarning(true);
+      Toast.show("Please fill all fields.", { type: "danger" });
+      return;
+    }
+    const userData = {
+      id: parsedUser.id,
+      name: formData.name,
+      email: formData.email,
+      PhoneNumber: parsedUser.phoneNumber,
+    };
+    router.push({pathname:"/(routes)/email-verification",params:{user:JSON.stringify(userData)}})
+  };
+
   return (
     <ScrollView>
       <View>
@@ -61,7 +80,7 @@ export default function RegistrationScreen() {
               <Input
                 title="Phone Number"
                 placeholder="phoneNumber"
-                value={"+919150253488"}
+                value={parsedUser?.phoneNumber}
                 disabled={true}
               />
               <Input

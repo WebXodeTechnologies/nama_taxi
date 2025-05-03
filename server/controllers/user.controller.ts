@@ -93,3 +93,35 @@ export const verifyOtp = async (
     });
   }
 };
+
+
+// sign-up New user Logic
+
+export const signupNewUser = async(req:Request,res:Response,next:NextFunction) => {
+  
+  try {
+    const {userId,name, email} = req.body;
+
+    const user = await prisma.user.findUnique({where:{id:userId}})
+    if (user?.email === null) {
+     const updatedUser =  await prisma.user.update({where:{id:userId},data:{name:name,email:email}})
+     res.status(200).json({success:true, user:updatedUser, message:"New User Created Successfully"})
+    } else {
+      res.status(400).json({success:false,message:"User Already Exists!"})
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// sending otp to mail
+
+export const sendingOtpToEmail = async(req:Request,res:Response,next:NextFunction) => {
+  try {
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+

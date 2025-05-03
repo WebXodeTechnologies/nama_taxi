@@ -34,7 +34,6 @@ import {
     disabled,
   }: InputProps) {
     const { colors } = useTheme();
-  
     return (
       <View>
         <Text style={[styles.title, { color: colors.text }]}>{title}</Text>

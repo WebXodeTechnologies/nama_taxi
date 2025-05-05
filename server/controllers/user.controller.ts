@@ -4,6 +4,7 @@ import twilio from "twilio";
 import prisma from "../utils/prisma";
 import jwt from "jsonwebtoken";
 import {nylas} from "../app"
+import { sendToken } from "../utils/send-token";
 
 dotenv.config();
 
@@ -99,22 +100,22 @@ export const verifyOtp = async (
 
 // sign-up New user Logic
 
-export const signupNewUser = async (req: Request, res: Response, next: NextFunction) => {
+// export const signupNewUser = async (req: Request, res: Response, next: NextFunction) => {
 
-  try {
-    const { userId, name, email } = req.body;
+//   try {
+//     const { userId, name, email } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { id: userId } })
-    if (user?.email === null) {
-      const updatedUser = await prisma.user.update({ where: { id: userId }, data: { name: name, email: email } })
-      res.status(200).json({ success: true, user: updatedUser, message: "New User Created Successfully" })
-    } else {
-      res.status(400).json({ success: false, message: "User Already Exists!" })
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
+//     const user = await prisma.user.findUnique({ where: { id: userId } })
+//     if (user?.email === null) {
+//       const updatedUser = await prisma.user.update({ where: { id: userId }, data: { name: name, email: email } })
+//       res.status(200).json({ success: true, user: updatedUser, message: "New User Created Successfully" })
+//     } else {
+//       res.status(400).json({ success: false, message: "User Already Exists!" })
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
 
 // sending otp to mail
 
@@ -176,5 +177,29 @@ export const sendingOtpToEmail = async (
     });
   }
 };
+
+
+// verifiying email otp
+
+export const verifyingEmail = async(req:Request,res:Response,next:NextFunction) => {
+  try {
+    const {otp,token} = req.body
+    const newUser:any = jwt.verify(token, process.env.EMAIL_ACTIVATION_SECRET!)
+
+    if (newUser.otp !== otp) {
+      return res.status(400).json({success:false,message:"OTP is Incorrect or Expired"})
+    }
+    const{name,email,userid} = newUser.user
+    
+    const user = await prisma.user.findUnique({ where: { email: email} })
+    if (user?.email === null) {
+      const updatedUser = await prisma.user.update({ where: { id: user.id }, data: { name: name, email: email } })
+      await sendToken(updatedUser,res);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({success:false,message:"Your Otp is Expired"})
+  }
+}
 
 

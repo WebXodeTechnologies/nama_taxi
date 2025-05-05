@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import AuthContainer from "@/utils/container/auth-container";
 import { windowHeight } from "@/Themes/app.constant";
 import SignInText from "@/components/login/signin.text";
@@ -9,9 +9,10 @@ import color from "@/Themes/app.colors";
 import { external } from "@/styles/external.style";
 import Button from "@/components/common/button";
 import { commonStyles } from "@/styles/common.style";
-import { useToast } from "react-native-toast-notifications";
+import { Toast, useToast } from "react-native-toast-notifications";
 import OTPTextInput from "react-native-otp-textinput";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function EmailVerificationScreen() {
   const [otp, setOtp] = useState("");
@@ -21,9 +22,25 @@ export default function EmailVerificationScreen() {
   const parsedUser = JSON.parse(user);
   console.log(parsedUser);
 
+  
   const handleSubmit = async () => {
-   
+    const otpNumbers = `${otp}`;
+  
+    try {
+      const res = await axios.put(`${process.env.EXPO_PUBLIC_SERVER_URI}/email-otp-verify`, {
+        token: parsedUser.token,
+        otp: otpNumbers,
+      });
+  
+      console.log("Response:", res.data);
+      await AsyncStorage.setItem('accessToken', res.data.accessToken);
+    } catch (error: any) {
+      console.log("Error:", error.message);
+      Toast.show(error.message, { placement: "bottom", type: "danger" });
+    }
   };
+  
+  
   return (
     <AuthContainer
       topSpace={windowHeight(240)}

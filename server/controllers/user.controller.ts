@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
 import twilio from "twilio";
 import prisma from "../utils/prisma";
+import jwt from "jsonwebtoken";
+import {nylas} from "../app"
 
 dotenv.config();
 
@@ -97,17 +99,17 @@ export const verifyOtp = async (
 
 // sign-up New user Logic
 
-export const signupNewUser = async(req:Request,res:Response,next:NextFunction) => {
-  
-  try {
-    const {userId,name, email} = req.body;
+export const signupNewUser = async (req: Request, res: Response, next: NextFunction) => {
 
-    const user = await prisma.user.findUnique({where:{id:userId}})
+  try {
+    const { userId, name, email } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } })
     if (user?.email === null) {
-     const updatedUser =  await prisma.user.update({where:{id:userId},data:{name:name,email:email}})
-     res.status(200).json({success:true, user:updatedUser, message:"New User Created Successfully"})
+      const updatedUser = await prisma.user.update({ where: { id: userId }, data: { name: name, email: email } })
+      res.status(200).json({ success: true, user: updatedUser, message: "New User Created Successfully" })
     } else {
-      res.status(400).json({success:false,message:"User Already Exists!"})
+      res.status(400).json({ success: false, message: "User Already Exists!" })
     }
   } catch (error) {
     console.log(error);
@@ -116,12 +118,63 @@ export const signupNewUser = async(req:Request,res:Response,next:NextFunction) =
 
 // sending otp to mail
 
-export const sendingOtpToEmail = async(req:Request,res:Response,next:NextFunction) => {
+export const sendingOtpToEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    
+    const { email, name, userId } = req.body;
+
+    if (!email || !name || !userId) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    const user = { userId, name, email };
+
+    const token = jwt.sign(
+      { user, otp },
+      process.env.EMAIL_ACTIVATION_SECRET!,
+      { expiresIn: "5m" }
+    );
+
+    const emailBody = `
+      <p>Hi ${name},</p>
+      <p>Your Namma Call Taxi OTP is <strong>${otp}</strong>.</p>
+      <p>If you didn't request this, please ignore this email.</p>
+      <p>Thanks,<br />Namma Call Taxi Team</p>
+    `;
+
+    try {
+      await nylas.messages.send({
+        identifier: process.env.USER_GRANT_ID!,
+        requestBody: {
+          to: [{ name, email }],
+          subject: "Verify Your Email Address!",
+          body: emailBody,
+        },
+      });
+      return res.status(200).json({
+        success: true,
+        message: "OTP sent successfully",
+        token,
+      });
+    } catch (error) {
+      console.error("Nylas email send error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send email",
+      });
+    }
   } catch (error) {
-    console.log(error);
+    console.error("Server error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
-}
+};
 
 

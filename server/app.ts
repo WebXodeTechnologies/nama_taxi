@@ -6,7 +6,7 @@ import Nylas from "nylas";
 
 export const app = express();
 
-const nylas = new Nylas({
+export const nylas = new Nylas({
     apiKey: process.env.NYLAS_API_KEY!,
   });
 

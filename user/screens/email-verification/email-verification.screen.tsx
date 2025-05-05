@@ -11,6 +11,7 @@ import Button from "@/components/common/button";
 import { commonStyles } from "@/styles/common.style";
 import { useToast } from "react-native-toast-notifications";
 import OTPTextInput from "react-native-otp-textinput";
+import axios from "axios";
 
 export default function EmailVerificationScreen() {
   const [otp, setOtp] = useState("");
@@ -20,7 +21,9 @@ export default function EmailVerificationScreen() {
   const parsedUser = JSON.parse(user);
   console.log(parsedUser);
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+   
+  };
   return (
     <AuthContainer
       topSpace={windowHeight(240)}

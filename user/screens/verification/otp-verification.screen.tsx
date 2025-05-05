@@ -11,7 +11,7 @@ import Button from "@/components/common/button";
 import { router, useLocalSearchParams } from "expo-router";
 import { commonStyles } from "@/styles/common.style";
 import { useToast } from "react-native-toast-notifications";
-import axios from "axios";
+import axios,{AxiosError} from "axios";
 
 export default function OtpVerificationScreen() {
 
@@ -21,28 +21,56 @@ export default function OtpVerificationScreen() {
   const {phoneNumber} = useLocalSearchParams();
 
 
- const handleSubmit = async() => {
+  const handleSubmit = async () => {
     if (otp === '') {
-      toast.show("please fill the Fields!", {placement:"bottom"});
-    } else {
-      setLoader(true);
-      const otpNumbers = `${otp}`;
-      console.log(otp,phoneNumber);
-      await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/verify-otp`, {phone_number:phoneNumber,otp:otpNumbers}).then((res)=> {
-        setLoader(false);
-        toast.show("Account Verified!");
-        if(res.data.user.email === null) {
-          router.push({pathname:"/(routes)/registration" , params: {user:JSON.stringify(res.data.user)}})
-        } else {
-          router.push("/(tabs)/home");
-        }
-      }).catch((error)=>{
-        setLoader(false);
-        console.log(error);
-        toast.show("something went wrong, please recheck the details", {type:"danger",placement:"bottom"});
+      toast.show("Please fill the OTP field!", { placement: "bottom" });
+      return;
+    }
+  
+    setLoader(true);
+    console.log("Verifying OTP for:", phoneNumber, "OTP:", otp);
+  
+    try {
+      const res = await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/verify-otp`, {
+        phone_number: phoneNumber,
+        otp: otp,
       });
-    };
-  }
+  
+      console.log("Server response:", res.data);
+  
+      const user = res.data.user;
+      if (!user) {
+        toast.show("Invalid response from server", { type: "danger" });
+        return;
+      }
+  
+      toast.show("Account Verified!");
+  
+      if (user.email === null) {
+        console.log("Redirecting to registration with user:", user);
+        router.push({
+          pathname: "/(routes)/registration",
+          params: { user: JSON.stringify(user) },
+        });
+      } else {
+        router.push("/(tabs)/home");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("OTP Verification error:", error.response?.data || error.message);
+      } else {
+        console.error("Unexpected error:", error);
+      }
+    
+      toast.show("Something went wrong. Please recheck the details.", {
+        type: "danger",
+        placement: "bottom",
+      });
+    }finally {
+      setLoader(false);
+    }
+  };
+  
  
 
   return (

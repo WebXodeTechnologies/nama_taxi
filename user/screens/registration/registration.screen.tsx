@@ -22,6 +22,7 @@ export default function RegistrationScreen() {
     phoneNumber: "",
     email: "",
   });
+  const [loading ,setLoading] = useState(false);
   const { colors } = useTheme();
 
   const handleChange = (key: string, value: string) => {
@@ -32,18 +33,30 @@ export default function RegistrationScreen() {
   };
 
   const handleSubmit = async() => {
+    setLoading(true);
     if (!formData.name || !formData.email) {
       setShowWarning(true);
       Toast.show("Please fill all fields.", { type: "danger" });
       return;
     }
-    const userData = {
-      id: parsedUser.id,
-      name: formData.name,
-      email: formData.email,
-      PhoneNumber: parsedUser.phoneNumber,
-    };
-    router.push({pathname:"/(routes)/email-verification",params:{user:JSON.stringify(userData)}})
+   
+    await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URI}/email-otp-request`, {email:formData.email,name:formData?.name, userId:parsedUser.id})
+    .then((res)=> {
+      setLoading(false);
+      const userData = {
+        id: parsedUser.id,
+        name: formData.name,
+        email: formData.email,
+        PhoneNumber: parsedUser.phoneNumber,
+        token: res.data.token,
+      };
+      router.push({pathname:"/(routes)/email-verification",params:{user:JSON.stringify(userData)}})
+      console.log(res);
+    }).catch((error) => {
+      setLoading(false);
+      console.log(error)
+    })
+   
   };
 
   return (
@@ -106,6 +119,7 @@ export default function RegistrationScreen() {
                   backgroundColor={color.buttonBg}
                   textColor={color.whiteColor}
                   onPress={() => handleSubmit()}
+                  disabled = {loading}
                 />
               </View>
             </View>

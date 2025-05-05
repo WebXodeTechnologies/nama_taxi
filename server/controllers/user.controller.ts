@@ -181,25 +181,88 @@ export const sendingOtpToEmail = async (
 
 // verifiying email otp
 
-export const verifyingEmail = async(req:Request,res:Response,next:NextFunction) => {
-  try {
-    const {otp,token} = req.body
-    const newUser:any = jwt.verify(token, process.env.EMAIL_ACTIVATION_SECRET!)
+// export const verifyingEmail = async(req:Request,res:Response,next:NextFunction) => {
+//   try {
+//     const {otp,token} = req.body
+//     const newUser:any = jwt.verify(token, process.env.EMAIL_ACTIVATION_SECRET!)
 
-    if (newUser.otp !== otp) {
-      return res.status(400).json({success:false,message:"OTP is Incorrect or Expired"})
-    }
-    const{name,email,userid} = newUser.user
+//     if (newUser.otp !== otp) {
+//       return res.status(400).json({success:false,message:"OTP is Incorrect or Expired"})
+//     }
+//     const{name,email,userid} = newUser.user
     
-    const user = await prisma.user.findUnique({ where: { email: email} })
-    if (user?.email === null) {
-      const updatedUser = await prisma.user.update({ where: { id: user.id }, data: { name: name, email: email } })
-      await sendToken(updatedUser,res);
+//     const user = await prisma.user.findUnique({ where: { email: email} })
+//     if (user?.email === null) {
+//       const updatedUser = await prisma.user.update({ where: { id: userid }, data: { name: name, email: email } })
+//       await sendToken(updatedUser,res);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).json({success:false,message:"Your Otp is Expired"})
+//   }
+// }
+
+export const verifyingEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { otp, token } = req.body;
+
+    if (!otp || !token) {
+      return res
+        .status(400)
+        .json({ success: false, message: "OTP and token are required" });
     }
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({success:false,message:"Your Otp is Expired"})
+
+    // Verify JWT token
+    let newUser: any;
+    try {
+      newUser = jwt.verify(token, process.env.EMAIL_ACTIVATION_SECRET!);
+    } catch (jwtError: any) {
+      if (jwtError.name === "TokenExpiredError") {
+        return res
+          .status(400)
+          .json({ success: false, message: "Token has expired" });
+      }
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid token" });
+    }
+
+    // Check OTP
+    if (newUser.otp !== otp) {
+      return res
+        .status(400)
+        .json({ success: false, message: "OTP is incorrect" });
+    }
+
+    const { name, email, userId } = newUser.user;
+
+    // Find and update user
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Update user with name, email, and verification status
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { name, email },
+    });
+
+    // Send token
+    await sendToken(updatedUser, res);
+  } catch (error: any) {
+    console.error("Email verification error:", {
+      message: error.message,
+      stack: error.stack,
+    });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
-}
+};
 
 

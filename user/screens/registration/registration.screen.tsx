@@ -56,7 +56,6 @@ export default function RegistrationScreen() {
       setLoading(false);
       console.log(error)
     })
-   
   };
 
   return (

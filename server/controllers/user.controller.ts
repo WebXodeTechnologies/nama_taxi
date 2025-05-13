@@ -69,11 +69,7 @@ export const verifyOtp = async (
         },
       });
       if (isUserExist) {
-        res.status(200).json({
-          success: true,
-          message: "OTP verified successfully!",
-          user: isUserExist,
-        });
+       await sendToken(isUserExist,res)
       } else {
         // create account
         const user = await prisma.user.create({
@@ -81,6 +77,7 @@ export const verifyOtp = async (
             phone_number: phone_number,
           },
         });
+        res.status(200).json({success:true, message: "Otp Verified", user:user})
       }
     } catch (error) {
       console.log(error);
@@ -179,7 +176,7 @@ export const sendingOtpToEmail = async (
 };
 
 
-// verifiying email otp
+
 
 // export const verifyingEmail = async(req:Request,res:Response,next:NextFunction) => {
 //   try {
@@ -201,6 +198,8 @@ export const sendingOtpToEmail = async (
 //     res.status(400).json({success:false,message:"Your Otp is Expired"})
 //   }
 // }
+
+// verifiying email otp
 
 export const verifyingEmail = async (
   req: Request,
@@ -266,3 +265,14 @@ export const verifyingEmail = async (
 };
 
 
+export const getLoggedInUserData = async (req: any, res: Response) => {
+  try {
+    const user = req.user;
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

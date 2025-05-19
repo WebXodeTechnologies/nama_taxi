@@ -1,5 +1,4 @@
-import { View, Text, TextInput, Pressable } from "react-native";
-import { styles } from "./styles";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import color from "@/Themes/app.colors";
 import { Clock, Search } from "@/utils/icons";
 import { windowHeight, windowWidth } from "@/Themes/app.constant";
@@ -9,53 +8,55 @@ import { router } from "expo-router";
 export default function LocationSearchBar() {
   return (
     <Pressable
-      style={[
-        styles.container,
-        { backgroundColor: color.lightGray },
-        { flexDirection: "row" },
-        { justifyContent: "space-around" },
-        { paddingHorizontal: windowWidth(18) },
-        { paddingRight: windowWidth(40) },
-      ]}
+      style={styles.container}
       onPress={() => router.push("/(routes)/rideplan")}
     >
-      <View style={{ flexDirection: "row", paddingLeft: windowWidth(30) }}>
+      <View style={styles.leftSection}>
         <Search />
-        <Text
-          style={[
-            styles.textInputStyle,
-            { fontSize: 20, fontWeight: "500", color: "#000" },
-          ]}
-        >
-          Where to?
-        </Text>
+        <Text style={styles.placeholderText}>Where to?</Text>
       </View>
-      <View>
-        <View
-          style={{
-            width: windowWidth(130),
-            height: windowHeight(28),
-            borderRadius: 20,
-            backgroundColor: "#fff",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Clock />
-            <Text
-              style={{
-                fontSize: windowHeight(12),
-                fontWeight: "600",
-                paddingHorizontal: 8,
-              }}
-            >
-              Now
-            </Text>
-            <DownArrow />
-          </View>
-        </View>
+      <View style={styles.rightSection}>
+        <Clock />
+        <Text style={styles.nowText}>Now</Text>
+        <DownArrow />
       </View>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: color.lightGray,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: windowWidth(18),
+    paddingVertical: windowHeight(12),
+    borderRadius: windowWidth(10),
+    marginHorizontal: windowWidth(10),
+    marginTop: windowHeight(10),
+  },
+  leftSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  placeholderText: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#000",
+    marginLeft: 10,
+  },
+  rightSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: windowWidth(10), // Adjusted right margin
+    gap: 8,
+  },
+  nowText: {
+    fontSize: windowHeight(12),
+    fontWeight: "600",
+    paddingHorizontal: 6,
+    color: "#000",
+  },
+});

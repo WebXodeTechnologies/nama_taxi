@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   rightSection: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: windowWidth(10), // Adjusted right margin
+    marginRight: windowWidth(10), 
     gap: 8,
   },
   nowText: {

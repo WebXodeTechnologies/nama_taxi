@@ -39,7 +39,7 @@ export default function HomeScreen() {
             }}
           />
         </View>
-        <LocationSearchBar/>
+        <LocationSearchBar />
       </SafeAreaView>
     </View>
   );

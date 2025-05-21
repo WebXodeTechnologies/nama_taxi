@@ -265,6 +265,8 @@ export const verifyingEmail = async (
 };
 
 
+// get loggedin user Data
+
 export const getLoggedInUserData = async (req: any, res: Response) => {
   try {
     const user = req.user;

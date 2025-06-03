@@ -7,7 +7,7 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./styles";
 import { external } from "@/styles/external.style";
 import { windowHeight, windowWidth } from "@/Themes/app.constant";
@@ -19,6 +19,8 @@ import color from "@/Themes/app.colors";
 import DownArrow from "@/assets/icons/downArrow";
 import PlaceHolder from "@/assets/icons/placeHolder";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import _ from "lodash";
+import axios from "axios";
 
 export default function RidePlanScreen() {
   const [places, setPlaces] = useState<any>([]);
@@ -41,6 +43,34 @@ export default function RidePlanScreen() {
     transit: null,
   });
   const [keyboardAvoidingHeight, setkeyboardAvoidingHeight] = useState(false);
+
+  const fetchPlaces = async (input: any) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json`,
+        {
+          params: {
+            input,
+            key: process.env.EXPO_PUBLIC_GOOGLE_CLOUD_API_KEY,
+            language: "en",
+          },
+        }
+      );
+      setPlaces(response.data.predictions);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const debouncedFetchPlaces = useCallback(_.debounce(fetchPlaces, 100), []);
+
+  useEffect(()=> {
+    if(query.length > 2 ) {
+      debouncedFetchPlaces(query);
+    } else {
+      setPlaces([]);
+    }
+  },[query,debouncedFetchPlaces])
 
   const handleInputChange = (text: string) => {
     setQuery(text);

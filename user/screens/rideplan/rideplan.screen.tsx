@@ -7,7 +7,7 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./styles";
 import { external } from "@/styles/external.style";
 import { windowHeight, windowWidth } from "@/Themes/app.constant";
@@ -19,6 +19,8 @@ import color from "@/Themes/app.colors";
 import DownArrow from "@/assets/icons/downArrow";
 import PlaceHolder from "@/assets/icons/placeHolder";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import _ from "lodash";
+import axios from "axios";
 
 export default function RidePlanScreen() {
   const [places, setPlaces] = useState<any>([]);
@@ -41,6 +43,34 @@ export default function RidePlanScreen() {
     transit: null,
   });
   const [keyboardAvoidingHeight, setkeyboardAvoidingHeight] = useState(false);
+
+  const fetchPlaces = async (input: any) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json`,
+        {
+          params: {
+            input,
+            key: process.env.EXPO_PUBLIC_GOOGLE_CLOUD_API_KEY,
+            language: "en",
+          },
+        }
+      );
+      setPlaces(response.data.predictions);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const debouncedFetchPlaces = useCallback(_.debounce(fetchPlaces, 100), []);
+
+  useEffect(()=> {
+    if(query.length > 2 ) {
+      debouncedFetchPlaces(query);
+    } else {
+      setPlaces([]);
+    }
+  },[query,debouncedFetchPlaces])
 
   const handleInputChange = (text: string) => {
     setQuery(text);
@@ -134,7 +164,7 @@ export default function RidePlanScreen() {
               <PickLocation />
               <View
                 style={{
-                  width: Dimensions.get("window").width - 110,
+                  width: Dimensions.get("window").width * 1 - 110,
                   borderBottomWidth: 1,
                   borderBottomColor: "#999",
                   marginLeft: 5,
@@ -153,12 +183,23 @@ export default function RidePlanScreen() {
               </View>
             </View>
 
-            <View style={{ flexDirection: "row", paddingVertical: 12 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                paddingVertical: 12,
+                paddingHorizontal: 10,
+                backgroundColor: "#fff", // Ensure outer wrapper is white
+                alignItems: "center",
+              }}
+            >
               <PlaceHolder />
               <View
                 style={{
+                  flex: 1, // ✅ Make this flex to fill remaining space
                   marginLeft: 5,
-                  width: Dimensions.get("window").width - 110,
+                  backgroundColor: "#000", // ✅ Prevent background color issues
+                  borderRadius: 8,
+                  overflow: "hidden", // ✅ Prevent child overflow (like autocomplete dropdown)
                 }}
               >
                 <GooglePlacesAutocomplete
@@ -186,15 +227,22 @@ export default function RidePlanScreen() {
                   }}
                   fetchDetails={true}
                   debounce={200}
-                  predefinedPlaces={[]} // 🔥 this prevents the error
+                  predefinedPlaces={[]}
                   styles={{
+                    container: {
+                      flex: 1,
+                    },
                     textInputContainer: {
                       width: "100%",
+                      backgroundColor: "#fff",
                     },
                     textInput: {
                       height: 38,
                       color: "#000",
                       fontSize: 16,
+                      backgroundColor: "#fff", // ✅ Match background
+                      borderRadius: 8,
+                      paddingHorizontal: 10,
                     },
                     predefinedPlacesDescription: {
                       color: "#000",

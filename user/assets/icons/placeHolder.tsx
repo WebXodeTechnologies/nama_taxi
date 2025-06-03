@@ -11,7 +11,7 @@ export default function PlaceHolder() {
     >
       <G
         transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
-        fill="#000000"
+        fill="#000"
         stroke="none"
       >
         <Path

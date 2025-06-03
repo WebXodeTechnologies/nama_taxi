@@ -134,7 +134,7 @@ export default function RidePlanScreen() {
               <PickLocation />
               <View
                 style={{
-                  width: Dimensions.get("window").width - 110,
+                  width: Dimensions.get("window").width * 1 - 110,
                   borderBottomWidth: 1,
                   borderBottomColor: "#999",
                   marginLeft: 5,
@@ -153,12 +153,23 @@ export default function RidePlanScreen() {
               </View>
             </View>
 
-            <View style={{ flexDirection: "row", paddingVertical: 12 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                paddingVertical: 12,
+                paddingHorizontal: 10,
+                backgroundColor: "#fff", // Ensure outer wrapper is white
+                alignItems: "center",
+              }}
+            >
               <PlaceHolder />
               <View
                 style={{
+                  flex: 1, // ✅ Make this flex to fill remaining space
                   marginLeft: 5,
-                  width: Dimensions.get("window").width - 110,
+                  backgroundColor: "#000", // ✅ Prevent background color issues
+                  borderRadius: 8,
+                  overflow: "hidden", // ✅ Prevent child overflow (like autocomplete dropdown)
                 }}
               >
                 <GooglePlacesAutocomplete
@@ -186,15 +197,22 @@ export default function RidePlanScreen() {
                   }}
                   fetchDetails={true}
                   debounce={200}
-                  predefinedPlaces={[]} // 🔥 this prevents the error
+                  predefinedPlaces={[]}
                   styles={{
+                    container: {
+                      flex: 1,
+                    },
                     textInputContainer: {
                       width: "100%",
+                      backgroundColor: "#fff",
                     },
                     textInput: {
                       height: 38,
                       color: "#000",
                       fontSize: 16,
+                      backgroundColor: "#fff", // ✅ Match background
+                      borderRadius: 8,
+                      paddingHorizontal: 10,
                     },
                     predefinedPlacesDescription: {
                       color: "#000",

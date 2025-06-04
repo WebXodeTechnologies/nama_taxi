@@ -187,19 +187,13 @@ export default function RidePlanScreen() {
               style={{
                 flexDirection: "row",
                 paddingVertical: 12,
-                paddingHorizontal: 10,
-                backgroundColor: "#fff", // Ensure outer wrapper is white
-                alignItems: "center",
               }}
             >
               <PlaceHolder />
               <View
                 style={{
-                  flex: 1, // ✅ Make this flex to fill remaining space
                   marginLeft: 5,
-                  backgroundColor: "#000", // ✅ Prevent background color issues
-                  borderRadius: 8,
-                  overflow: "hidden", // ✅ Prevent child overflow (like autocomplete dropdown)
+                  width: Dimensions.get("window").width * 1 - 110,
                 }}
               >
                 <GooglePlacesAutocomplete
@@ -233,23 +227,19 @@ export default function RidePlanScreen() {
                       flex: 1,
                     },
                     textInputContainer: {
-                      width: "100%",
-                      backgroundColor: "#fff",
+                      width: "98%",
                     },
                     textInput: {
                       height: 38,
                       color: "#000",
                       fontSize: 16,
-                      backgroundColor: "#fff", // ✅ Match background
-                      borderRadius: 8,
-                      paddingHorizontal: 10,
                     },
                     predefinedPlacesDescription: {
                       color: "#000",
                     },
                   }}
                   textInputProps={{
-                    onChangeText: handleInputChange,
+                    onChangeText: (text) => handleInputChange(text),
                     value: query,
                     onFocus: () => setkeyboardAvoidingHeight(true),
                   }}

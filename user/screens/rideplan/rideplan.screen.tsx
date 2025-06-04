@@ -43,6 +43,7 @@ export default function RidePlanScreen() {
     transit: null,
   });
   const [keyboardAvoidingHeight, setkeyboardAvoidingHeight] = useState(false);
+  
 
   const fetchPlaces = async (input: any) => {
     try {

@@ -64,13 +64,13 @@ export default function RidePlanScreen() {
 
   const debouncedFetchPlaces = useCallback(_.debounce(fetchPlaces, 100), []);
 
-  useEffect(()=> {
-    if(query.length > 2 ) {
+  useEffect(() => {
+    if (query.length > 2) {
       debouncedFetchPlaces(query);
     } else {
       setPlaces([]);
     }
-  },[query,debouncedFetchPlaces])
+  }, [query, debouncedFetchPlaces]);
 
   const handleInputChange = (text: string) => {
     setQuery(text);
